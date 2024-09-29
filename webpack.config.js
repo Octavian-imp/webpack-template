@@ -69,10 +69,6 @@ function getStyleLoaders(...preset) {
   } else {
     config.unshift({
       loader: MiniCssExtractPlugin.loader,
-      options: {
-        hmr: isDev,
-        reloadAll: true,
-      },
     });
   }
   if (preset.findIndex((ext) => ext === "scss") !== -1) {
@@ -185,7 +181,7 @@ function getModuleRules(...addSupportFiles) {
 module.exports = {
   context: path.resolve(__dirname, "."),
   entry: {
-    main: ["@babel/polyfill", "./src/index.jsx"],
+    main: ["@babel/polyfill", "./src/index.js"],
   },
   mode: MODE_DEV ? "development" : "production",
   output: {
@@ -208,7 +204,7 @@ module.exports = {
       directory: path.join(__dirname, "dist"),
     },
     port: PORT,
-    // open: true,
+    open: true,
     hot: true,
     compress: true,
     historyApiFallback: true,
@@ -237,5 +233,5 @@ module.exports = {
       filename: "[name].[hash].css",
     }),
   ],
-  module: getModuleRules("tailwind", "scss", "react"),
+  module: getModuleRules("scss"),
 };
