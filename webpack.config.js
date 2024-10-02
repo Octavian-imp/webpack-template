@@ -4,6 +4,10 @@ const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserWebpackPlugin = require("terser-webpack-plugin");
+const dotenv = require("dotenv").config({
+  path: path.join(__dirname, ".env"),
+});
+const webpack = require("webpack");
 
 const isDev = process.env.MODE === "development" || process.env.MODE === "dev";
 const PORT = process.env.PORT || 3000;
@@ -60,16 +64,14 @@ function getOptimization() {
  * @return {array} - Array of style loaders.
  */
 function getStyleLoaders(...preset) {
-  const config = ["css-loader"];
+  const config = [
+    isDev ? "style-loader" : MiniCssExtractPlugin.loader,
+    "css-loader",
+  ];
 
   if (preset.findIndex((ext) => ext === "tailwind") !== -1) {
     // adding postcss for supporting tailwind
-    config.unshift("style-loader");
     config.push("postcss-loader");
-  } else {
-    config.unshift({
-      loader: MiniCssExtractPlugin.loader,
-    });
   }
   if (preset.findIndex((ext) => ext === "scss") !== -1) {
     config.push("sass-loader");
@@ -231,6 +233,9 @@ module.exports = {
     // }),
     new MiniCssExtractPlugin({
       filename: "[name].[hash].css",
+    }),
+    new webpack.DefinePlugin({
+      "process.env": dotenv.parsed,
     }),
   ],
   module: getModuleRules("scss"),
