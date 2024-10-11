@@ -39,6 +39,7 @@
   "browserslist": "> 0.25%, not dead",
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
+    "lucide": "^0.447.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   }
