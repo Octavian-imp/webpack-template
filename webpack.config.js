@@ -52,21 +52,18 @@ function getOptimization() {
 }
 
 /**
- * Returns style loaders for webpack, given an array of presets. If
- * tailwind is included in the presets, it adds postcss-loader to the
- * array. If scss is included, it adds sass-loader to the array. If
- * isDev is true, it adds style-loader with hmr and reloadAll options to
- * the array. If isDev is false, it adds MiniCssExtractPlugin.loader
- * to the array.
+ * Returns an array of style loaders for webpack, given the presets.
+ * If "tailwind" is in the presets, it adds support for tailwindcss.
+ * If "scss" is in the presets, it adds support for scss/sass files.
+ * If "css-modules" is in the presets, it adds support for css-modules.
  *
- * @param {array} preset - Array of presets, which may include 'tailwind',
- *   'scss', or both.
- * @return {array} - Array of style loaders.
+ * @param {...string} preset - presets to add support for
+ * @return {array} - array of style loaders
  */
 function getStyleLoaders(...preset) {
-  const config = [
-    isDev ? "style-loader" : MiniCssExtractPlugin.loader,
-    {
+  const config = [isDev ? "style-loader" : MiniCssExtractPlugin.loader]
+  if (preset.findIndex((ext) => ext === "css-modules") !== -1) {
+    config.push({
       loader: "css-loader",
       options: {
         modules: {
@@ -75,9 +72,10 @@ function getStyleLoaders(...preset) {
           exportLocalsConvention: "as-is",
         },
       },
-    },
-  ]
-
+    })
+  } else {
+    config.push("css-loader")
+  }
   if (preset.findIndex((ext) => ext === "tailwind") !== -1) {
     // adding postcss for supporting tailwind
     config.push("postcss-loader")
@@ -89,29 +87,25 @@ function getStyleLoaders(...preset) {
 }
 
 /**
- * Returns an object containing an array of module rules for webpack.
- * If "tailwind" is included in the addSupportFiles array, it adds support for tailwindcss.
- * If "scss" is included, it adds support for scss/sass files.
- * If "xml" is included, it adds support for xml files.
- * If "csv" is included, it adds support for csv files.
- * If "ts" is included, it adds support for typescript files.
- * If "react" is included, it adds support for react files.
+ * Returns module rules for webpack configuration.
  *
- * @param {...string} addSupportFiles - Array of file extensions to add
- *   support for.
- * @return {object} - Object containing an array of module rules.
+ * @param {...string} addSupportFiles - Extensions to add support for. Supports
+ * "tailwind", "scss", "css-modules", "xml", "csv", "ts", and "react".
+ * @returns {object} - Module rules for webpack configuration.
  */
 function getModuleRules(...addSupportFiles) {
-  const tailwindPreset =
-    addSupportFiles.findIndex((ext) => ext === "tailwind") !== -1
-      ? "tailwind"
-      : undefined
-
+  const stylesPreset = []
+  if (addSupportFiles.findIndex((ext) => ext === "tailwind") !== -1) {
+    stylesPreset.push("tailwind")
+  }
+  if (addSupportFiles.findIndex((ext) => ext === "css-modules") !== -1) {
+    stylesPreset.push("css-modules")
+  }
   const config = {
     rules: [
       {
         test: /\.css$/,
-        use: getStyleLoaders(tailwindPreset),
+        use: getStyleLoaders(...stylesPreset),
       },
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/,
@@ -135,15 +129,9 @@ function getModuleRules(...addSupportFiles) {
   }
 
   if (addSupportFiles.findIndex((ext) => ext === "scss") !== -1) {
-    const presets = ["scss"]
-
-    if (addSupportFiles.findIndex((ext) => ext === "tailwind") !== -1) {
-      presets.push("tailwind")
-    }
-
     config.rules.push({
       test: /\.s[ac]ss$/,
-      use: getStyleLoaders(...presets),
+      use: getStyleLoaders(...stylesPreset, "scss"),
     })
   }
 
@@ -256,5 +244,5 @@ module.exports = {
       "process.env": dotenv.parsed,
     }),
   ],
-  module: getModuleRules("scss", "react", "ts"),
+  module: getModuleRules("scss", "react", "ts", "css-modules"),
 }
