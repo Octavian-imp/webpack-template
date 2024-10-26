@@ -33,9 +33,9 @@
   "version": "1.0.0",
   "main": "postcss.config.js",
   "scripts": {
-    "dev": "npx webpack serve --env MODE=dev",
-    "dev:build": "npx webpack serve --env MODE=prod",
-    "build": "npx webpack --env MODE=prod"
+    "dev": "npx webpack serve --env MODE=development --config-name react-ts-scss-cssModules-tailwind",
+    "dev:build": "npx webpack serve --env MODE=production --config-name react-ts-scss-cssModules-tailwind",
+    "build": "npx webpack --env MODE=prod --config-name react-ts-scss-cssModules-tailwind"
   },
   "author": "",
   "license": "ISC",

@@ -189,10 +189,11 @@ module.exports = (env) => {
 
     return config
   }
-  return {
-    context: path.resolve(__dirname, "."),
+
+  const mainConfigOptions = {
+    context: path.resolve(__dirname, "src"),
     entry: {
-      main: ["@babel/polyfill", "./src/index.tsx"],
+      main: ["@babel/polyfill", "./index.js"],
     },
     mode: MODE_DEV ? "development" : "production",
     output: {
@@ -200,7 +201,7 @@ module.exports = (env) => {
       path: __dirname + "/dist",
     },
     resolve: {
-      extensions: [".js", ".jsx", ".ts", ".tsx", ".scss", ".css"],
+      extensions: [".js", ".scss", ".css"],
       alias: {
         "@": path.resolve(__dirname, "src"),
       },
@@ -226,7 +227,7 @@ module.exports = (env) => {
     optimization: getOptimization(),
     plugins: [
       new HtmlWebpackPlugin({
-        template: "./src/index.html",
+        template: "./index.html",
         minify: {
           collapseWhitespace: isDev ? false : true,
           removeComments: isDev ? false : true,
@@ -250,6 +251,52 @@ module.exports = (env) => {
         "process.env": dotenv.parsed,
       }),
     ],
-    module: getModuleRules("scss", "react", "ts", "css-modules"),
+    module: getModuleRules("scss"),
   }
+
+  return [
+    {
+      ...mainConfigOptions,
+      name: "html-scss-js",
+      entry: {
+        main: ["@babel/polyfill", "./index.js"],
+      },
+    },
+    {
+      ...mainConfigOptions,
+      name: "html-scss-js-tailwind",
+      entry: {
+        main: ["@babel/polyfill", "./index.js"],
+      },
+      module: getModuleRules("scss", "tailwind"),
+    },
+    {
+      ...mainConfigOptions,
+      name: "react-ts-scss-cssModules",
+      entry: {
+        main: ["@babel/polyfill", "./index.tsx"],
+      },
+      resolve: {
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".scss", ".css"],
+        alias: {
+          "@": path.resolve(__dirname, "src"),
+        },
+      },
+      module: getModuleRules("scss", "react", "ts", "css-modules"),
+    },
+    {
+      ...mainConfigOptions,
+      name: "react-ts-scss-cssModules-tailwind",
+      entry: {
+        main: ["@babel/polyfill", "./index.tsx"],
+      },
+      resolve: {
+        extensions: [".js", ".jsx", ".ts", ".tsx", ".scss", ".css"],
+        alias: {
+          "@": path.resolve(__dirname, "src"),
+        },
+      },
+      module: getModuleRules("scss", "react", "ts", "css-modules", "tailwind"),
+    },
+  ]
 }
