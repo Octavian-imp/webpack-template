@@ -4,11 +4,11 @@
 
 - Обычную верстку (html, css | scss, typescript, tailwind)
 
-        В webpack.config в вызове функции getModuleRules указать через запятую 'tailwind' | 'scss' | 'ts'
+        В webpack.config в вызове функции getModuleRules указать через запятую 'tailwind' | 'scss' | 'ts' 
 
 - Сборку под React c tailwind, css, scss
 
-        В webpack.config в вызове функции getModuleRules указать через запятую 'tailwind' | 'scss' | 'ts' && 'react'
+        В webpack.config в вызове функции getModuleRules указать через запятую 'tailwind' | 'scss' | 'ts'| 'css-modules' && 'react'
 
 ### Примечание:
 
