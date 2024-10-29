@@ -33,10 +33,12 @@
   "version": "1.0.0",
   "main": "postcss.config.js",
   "scripts": {
-    "dev:react-ts-modules":"npx webpack serve --env MODE=development --config-name react-ts-scss-cssModules"
+    "dev:scss-tailwind":"npx webpack serve --env MODE=development --config-name html-scss-js-tailwind",
+    "dev:scss": "npx webpack serve --env MODE=development --config-name html-scss-js", 
+    "dev:react-ts-modules":"npx webpack serve --env MODE=development --config-name react-ts-scss-cssModules", 
     "dev:react-ts-tw-modules": "npx webpack serve --env MODE=development --config-name react-ts-scss-cssModules-tailwind",
-    "dev:build": "npx webpack serve --env MODE=production --config-name react-ts-scss-cssModules-tailwind",
-    "build": "npx webpack --env MODE=prod --config-name react-ts-scss-cssModules-tailwind"
+    "dev:build": "npx webpack serve --env MODE=production --config-name <имя конфига>",
+    "build": "npx webpack --env MODE=prod --config-name <имя конфига>"
   },
   "author": "",
   "license": "ISC",
