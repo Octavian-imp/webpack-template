@@ -68,6 +68,7 @@ module.exports = (env) => {
             auto: /\.module\.\w+/i,
             namedExport: false,
             exportLocalsConvention: "as-is",
+            localIdentName: "[folder]__[local]___[hash:base64:5]",
           },
         },
       })
