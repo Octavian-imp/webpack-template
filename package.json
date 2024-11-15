@@ -6,12 +6,18 @@
     "@babel/preset-typescript": "^7.25.7",
     "@types/react": "^18.3.11",
     "@types/react-dom": "^18.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.14.0",
+    "@typescript-eslint/parser": "^8.14.0",
     "babel-loader": "^9.2.1",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
     "csv-loader": "^3.0.5",
+    "eslint": "^9.15.0",
+    "eslint-plugin-react": "^7.37.2",
     "html-webpack-plugin": "^5.6.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
     "mini-css-extract-plugin": "^2.9.1",
     "postcss": "^8.4.47",
     "postcss-loader": "^8.1.1",
@@ -22,6 +28,7 @@
     "tailwindcss": "^3.4.13",
     "terser-webpack-plugin": "^5.3.10",
     "typescript": "^5.6.3",
+    "typescript-eslint": "^8.14.0",
     "typescript-plugin-css-modules": "^5.1.0",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
@@ -37,7 +44,11 @@
     "dev:react-ts-modules": "npx webpack serve --env MODE=development --config-name react-ts-scss-cssModules",
     "dev:react-ts-tw-modules": "npx webpack serve --env MODE=development --config-name react-ts-scss-cssModules-tailwind",
     "dev:build": "npx webpack serve --env MODE=production --config-name react-ts-scss-cssModules-tailwind",
-    "build": "npx webpack --env MODE=prod --config-name react-ts-scss-cssModules-tailwind"
+    "build": "npx webpack --env MODE=prod --config-name react-ts-scss-cssModules-tailwind",
+    "lint": "npx eslint . ",
+    "lint:fix": "npx eslint . --fix ",
+    "format": "npx prettier --write ./src",
+    "migrate:linter": "npx @eslint/migrate-config .eslintrc.json"
   },
   "author": "",
   "license": "ISC",
@@ -49,5 +60,12 @@
     "lucide": "^0.447.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
+  },
+  "lint-staged": {
+    "*.{js,ts,ts,tsx}": [
+      "npm run lint:fix",
+      "npm run format",
+      "git add ."
+    ]
   }
 }
