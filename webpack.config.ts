@@ -1,15 +1,26 @@
-const { CleanWebpackPlugin } = require("clean-webpack-plugin")
-const HtmlWebpackPlugin = require("html-webpack-plugin")
-const CopyWebpackPlugin = require("copy-webpack-plugin")
-const path = require("path")
-const MiniCssExtractPlugin = require("mini-css-extract-plugin")
-const TerserWebpackPlugin = require("terser-webpack-plugin")
-const Dotenv = require("dotenv-webpack")
+import { Configuration } from "webpack";
+
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require("path");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserWebpackPlugin = require("terser-webpack-plugin");
+const Dotenv = require("dotenv-webpack");
+
+type SupportFiles =
+  | "tailwind"
+  | "scss"
+  | "css-modules"
+  | "xml"
+  | "csv"
+  | "ts"
+  | "react";
 
 module.exports = (env) => {
-  const isDev = env.MODE === "development" || env.MODE === "dev"
-  const PORT = env.PORT || 3000
-  const MODE_DEV = isDev ?? "development"
+  const isDev = env.MODE === "development" || env.MODE === "dev";
+  const PORT = env.PORT || 3000;
+  const MODE_DEV = isDev ?? "development";
 
   /**
    * Returns babel options with provided presets. If no presets are provided,
@@ -21,13 +32,13 @@ module.exports = (env) => {
   function getBabelOpts(...preset) {
     const opts = {
       presets: ["@babel/preset-env"],
-    }
+    };
 
     if (preset.length > 0) {
-      opts.presets.push(...preset)
+      opts.presets.push(...preset);
     }
 
-    return opts
+    return opts;
   }
 
   /**
@@ -36,17 +47,17 @@ module.exports = (env) => {
    *
    * @return {object} - Optimization options
    */
-  function getOptimization() {
-    const config = {
+  function getOptimization(): Configuration["optimization"] {
+    const config: Configuration["optimization"] = {
       splitChunks: {
         chunks: "all",
       },
-    }
+    };
 
     if (!isDev) {
-      config.minimizer = [new TerserWebpackPlugin()]
+      config.minimizer = [new TerserWebpackPlugin()];
     }
-    return config
+    return config;
   }
 
   /**
@@ -59,7 +70,7 @@ module.exports = (env) => {
    * @return {array} - array of style loaders
    */
   function getStyleLoaders(...preset) {
-    const config = [isDev ? "style-loader" : MiniCssExtractPlugin.loader]
+    const config = [isDev ? "style-loader" : MiniCssExtractPlugin.loader];
     if (preset.findIndex((ext) => ext === "css-modules") !== -1) {
       config.push({
         loader: "css-loader",
@@ -71,18 +82,18 @@ module.exports = (env) => {
             localIdentName: "[folder]__[local]___[hash:base64:5]",
           },
         },
-      })
+      });
     } else {
-      config.push("css-loader")
+      config.push("css-loader");
     }
     if (preset.findIndex((ext) => ext === "tailwind") !== -1) {
       // adding postcss for supporting tailwind
-      config.push("postcss-loader")
+      config.push("postcss-loader");
     }
     if (preset.findIndex((ext) => ext === "scss") !== -1) {
-      config.push("sass-loader")
+      config.push("sass-loader");
     }
-    return config
+    return config;
   }
 
   /**
@@ -92,13 +103,13 @@ module.exports = (env) => {
    * "tailwind", "scss", "css-modules", "xml", "csv", "ts", and "react".
    * @returns {object} - Module rules for webpack configuration.
    */
-  function getModuleRules(...addSupportFiles) {
-    const stylesPreset = []
+  function getModuleRules(...addSupportFiles: SupportFiles[]) {
+    const stylesPreset: SupportFiles[] = [];
     if (addSupportFiles.findIndex((ext) => ext === "tailwind") !== -1) {
-      stylesPreset.push("tailwind")
+      stylesPreset.push("tailwind");
     }
     if (addSupportFiles.findIndex((ext) => ext === "css-modules") !== -1) {
-      stylesPreset.push("css-modules")
+      stylesPreset.push("css-modules");
     }
     const config = {
       rules: [
@@ -131,27 +142,27 @@ module.exports = (env) => {
           ],
         },
       ],
-    }
+    };
 
     if (addSupportFiles.findIndex((ext) => ext === "scss") !== -1) {
       config.rules.push({
         test: /\.s[ac]ss$/,
         use: getStyleLoaders(...stylesPreset, "scss"),
-      })
+      });
     }
 
     if (addSupportFiles.findIndex((ext) => ext === "xml") !== -1) {
       config.rules.push({
         test: /\.xml$/,
         use: ["xml-loader"],
-      })
+      });
     }
 
     if (addSupportFiles.findIndex((ext) => ext === "csv") !== -1) {
       config.rules.push({
         test: /\.csv$/,
         use: ["csv-loader"],
-      })
+      });
     }
 
     if (addSupportFiles.findIndex((ext) => ext === "ts") !== -1) {
@@ -164,13 +175,13 @@ module.exports = (env) => {
             options: getBabelOpts("@babel/preset-typescript"),
           },
         ],
-      })
+      });
     }
     if (addSupportFiles.findIndex((ext) => ext === "react") !== -1) {
-      const loaderOptions = ["@babel/preset-react"]
+      const loaderOptions = ["@babel/preset-react"];
 
       if (addSupportFiles.findIndex((ext) => ext === "ts") !== -1) {
-        loaderOptions.push("@babel/preset-typescript")
+        loaderOptions.push("@babel/preset-typescript");
       }
 
       config.rules.push({
@@ -182,13 +193,13 @@ module.exports = (env) => {
             options: getBabelOpts(...loaderOptions),
           },
         ],
-      })
+      });
     }
 
-    return config
+    return config;
   }
 
-  const mainConfigOptions = {
+  const mainConfigOptions: Configuration = {
     context: path.resolve(__dirname, "src"),
     entry: {
       main: ["@babel/polyfill", "./index.js"],
@@ -248,9 +259,9 @@ module.exports = (env) => {
       new Dotenv(),
     ],
     module: getModuleRules("scss"),
-  }
+  };
 
-  return [
+  const resultConfig: Configuration[] = [
     {
       ...mainConfigOptions,
       name: "html-scss-js",
@@ -294,5 +305,7 @@ module.exports = (env) => {
       },
       module: getModuleRules("scss", "react", "ts", "css-modules", "tailwind"),
     },
-  ]
-}
+  ];
+
+  return resultConfig;
+};
